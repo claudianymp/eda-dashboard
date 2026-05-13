@@ -1,151 +1,57 @@
 import streamlit as st
 import pandas as pd
-import math
-from pathlib import Path
+from src.load_data import load_csv_to_dataframe, load_info_dataset
 
-# Set the title and favicon that appear in the Browser's tab bar.
 st.set_page_config(
-    page_title='GDP dashboard',
-    page_icon=':earth_americas:', # This is an emoji shortcode. Could be a URL too.
+    page_title='EDA - Dashboard',
+    page_icon=':bar_chart:',
+    layout='wide'
 )
 
-# -----------------------------------------------------------------------------
-# Declare some useful functions.
+def show_data_information(df, limit=5):
+    if df is not None:
+        col1, col2, col3 = st.columns(3)
+        col1.metric("Total de Linhas", df.shape[0])
+        col2.metric("Total de Colunas", df.shape[1])
+        col3.metric("Dados Faltantes", df.isna().sum().sum())
 
-@st.cache_data
-def get_gdp_data():
-    """Grab GDP data from a CSV file.
+        tab1, tab2 = st.tabs(["Início (Head)", "Fim (Tail)"])
+        with tab1:
+            st.subheader("Registros iniciais do dataset")
+            st.dataframe(df.head(limit), width='stretch')
+        
+        with tab2:
+            st.subheader("Registros finais do dataset")
+            st.dataframe(df.tail(limit), width='stretch')
 
-    This uses caching to avoid having to read the file every time. If we were
-    reading from an HTTP endpoint instead of a file, it's a good idea to set
-    a maximum age to the cache with the TTL argument: @st.cache_data(ttl='1d')
-    """
+st.title("Dashboard - Análise Exploratória de Dados (EDA)")
+st.markdown("---")
 
-    # Instead of a CSV on disk, you could read from an HTTP endpoint here too.
-    DATA_FILENAME = Path(__file__).parent/'data/gdp_data.csv'
-    raw_gdp_df = pd.read_csv(DATA_FILENAME)
+tab_loading_data, tab_analysis,tab_train_model  = st.tabs([
+    "Explorar Dataset",
+    "Análise Exploratória de Dados",
+    "Treinar Rede Neural"
+])
 
-    MIN_YEAR = 1960
-    MAX_YEAR = 2022
-
-    # The data above has columns like:
-    # - Country Name
-    # - Country Code
-    # - [Stuff I don't care about]
-    # - GDP for 1960
-    # - GDP for 1961
-    # - GDP for 1962
-    # - ...
-    # - GDP for 2022
-    #
-    # ...but I want this instead:
-    # - Country Name
-    # - Country Code
-    # - Year
-    # - GDP
-    #
-    # So let's pivot all those year-columns into two: Year and GDP
-    gdp_df = raw_gdp_df.melt(
-        ['Country Code'],
-        [str(x) for x in range(MIN_YEAR, MAX_YEAR + 1)],
-        'Year',
-        'GDP',
-    )
-
-    # Convert years from string to integers
-    gdp_df['Year'] = pd.to_numeric(gdp_df['Year'])
-
-    return gdp_df
-
-gdp_df = get_gdp_data()
-
-# -----------------------------------------------------------------------------
-# Draw the actual page
-
-# Set the title that appears at the top of the page.
-'''
-# :earth_americas: GDP dashboard
-
-Browse GDP data from the [World Bank Open Data](https://data.worldbank.org/) website. As you'll
-notice, the data only goes to 2022 right now, and datapoints for certain years are often missing.
-But it's otherwise a great (and did I mention _free_?) source of data.
-'''
-
-# Add some spacing
-''
-''
-
-min_value = gdp_df['Year'].min()
-max_value = gdp_df['Year'].max()
-
-from_year, to_year = st.slider(
-    'Which years are you interested in?',
-    min_value=min_value,
-    max_value=max_value,
-    value=[min_value, max_value])
-
-countries = gdp_df['Country Code'].unique()
-
-if not len(countries):
-    st.warning("Select at least one country")
-
-selected_countries = st.multiselect(
-    'Which countries would you like to view?',
-    countries,
-    ['DEU', 'FRA', 'GBR', 'BRA', 'MEX', 'JPN'])
-
-''
-''
-''
-
-# Filter the data
-filtered_gdp_df = gdp_df[
-    (gdp_df['Country Code'].isin(selected_countries))
-    & (gdp_df['Year'] <= to_year)
-    & (from_year <= gdp_df['Year'])
-]
-
-st.header('GDP over time', divider='gray')
-
-''
-
-st.line_chart(
-    filtered_gdp_df,
-    x='Year',
-    y='GDP',
-    color='Country Code',
-)
-
-''
-''
-
-
-first_year = gdp_df[gdp_df['Year'] == from_year]
-last_year = gdp_df[gdp_df['Year'] == to_year]
-
-st.header(f'GDP in {to_year}', divider='gray')
-
-''
-
-cols = st.columns(4)
-
-for i, country in enumerate(selected_countries):
-    col = cols[i % len(cols)]
-
-    with col:
-        first_gdp = first_year[first_year['Country Code'] == country]['GDP'].iat[0] / 1000000000
-        last_gdp = last_year[last_year['Country Code'] == country]['GDP'].iat[0] / 1000000000
-
-        if math.isnan(first_gdp):
-            growth = 'n/a'
-            delta_color = 'off'
-        else:
-            growth = f'{last_gdp / first_gdp:,.2f}x'
-            delta_color = 'normal'
-
-        st.metric(
-            label=f'{country} GDP',
-            value=f'{last_gdp:,.0f}B',
-            delta=growth,
-            delta_color=delta_color
-        )
+st.session_state.df_test = None
+st.session_state.df_train = None
+st.session_state.df = None
+with tab_loading_data:
+    with st.expander("Carregar Dados", expanded=True):
+        st.session_state.df_test = load_csv_to_dataframe('./data/test.csv')
+        st.session_state.df_train = load_csv_to_dataframe('./data/train.csv')
+        st.session_state.df = pd.concat([st.session_state.df_train, st.session_state.df_test], ignore_index=True)
+        if(st.session_state.df is not None):
+            st.success(f'Dados carregados! Total de linhas: {len(st.session_state.df)}')
+            
+    with st.expander("Visualização de amostras do dataset"):
+        show_data_information(st.session_state.df, 10)
+        
+    with st.expander("Informações do dataset: colunas, tipos de dados, dados não nulos e nulos"):
+        st.table(load_info_dataset(st.session_state.df))
+                    
+with tab_analysis:
+    st.subheader('Análise de Dataset Tabular')
+    
+with tab_train_model:
+    st.subheader('Treinar modelo')
