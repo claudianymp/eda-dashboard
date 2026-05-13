@@ -5,82 +5,82 @@ por: Claudiany Martins (claudiany.martins@ufrpe.br)
 
 ##  Dataset para Classificação de Câncer de Pulmão
 
-### Dataset information
-[kaggle - Lung Cancer Dataset ](https://www.kaggle.com/datasets/datasetengineer/lungcanc2024?utm_source=chatgpt.com&select=LungCanC2024_Dataset.csv)
+
  
-O dataset **LungCanC2024** oferece uma infraestrutura de dados em larga escala para o suporte à decisão clínica no diagnóstico do câncer de pulmão. Composto por 289,010 mil registros, o conjunto unifica dados de alta complexidade, incluindo biomarcadores moleculares, características radiômicas extraídas de exames de imagem e metadados clínico-demográficos. O diferencial deste repositório reside na sua natureza multirrótulo, permitindo que algoritmos sejam treinados simultaneamente para a identificação de presença de câncer, subtipagem histológica, estadiamento (I-IV) e predição de tempo de sobrevida, sendo um recurso essencial para experimentação em redes neurais profundas e arquiteturas de aprendizado distribuído.
+### LungCanC2024: Predição Multimodal e Clustering de Câncer de Pulmão
 
-## Predição e Análise de Câncer de Pulmão
-
-Este projeto aplica técnicas de **KDD (Knowledge Discovery in Databases)** e **Deep Learning** para a detecção e classificação de tumores pulmonares, integrando dados radiómicos, clínicos e genómicos.
+Este repositório apresenta o desenvolvimento de um ecossistema de análise preditiva para o cancer do pulmão, utilizando o dataset [Lung Cancer Dataset ](https://www.kaggle.com/datasets/datasetengineer/lungcanc2024?utm_source=chatgpt.com&select=LungCanC2024_Dataset.csv). O projeto integra técnicas de **Redes Neuronais (MLP)** para classificação e **DBSCAN** para a descoberta de padrões não supervisionados, seguindo a metodologia rigorosa de **KDD (Knowledge Discovery in Databases)**.
 
 ---
 
-### Descrição das Funcionalidades (Dataset)
+### Descrição do Projeto
 
-O conjunto de dados está estruturado em três categorias principais, permitindo uma análise multifatorial do paciente.
+O cancer do pulmão é uma das principais causas de mortalidade oncológica global. Este projeto visa fornecer modelos diagnósticos precisos através da integração de dados multidimensionais: **Radiómica (imagem), Clínica e Genómica**.
 
-### 1. Características de Imagem (Radiómica)
-Dados extraídos de exames de imagem como CT (Tomografia) e PET Scans.
-
-| Nome do Atributo   | Descrição                                                                      |
-| :----------------- | :----------------------------------------------------------------------------- |
-| `nodule_size_mm`   | Tamanho dos nódulos pulmonares detectados (em mm).                             |
-| `nodule_texture`   | Característica de textura derivada da análise radiológica.                     |
-| `HU_mean`          | Valor médio da Unidade Hounsfield (HU) em exames de CT.                        |
-| `HU_std`           | Desvio padrão dos valores de HU (indica variação de densidade).                |
-| `GLCM_contrast`    | Contraste da matriz de co-ocorrência de níveis de cinza (heterogeneidade).     |
-| `GLCM_correlation` | Métrica de correlação GLCM que avalia a consistência do padrão.                |
-| `PET_SUVmax`       | Valor máximo de captação padronizada (SUV) do PET scan (atividade metabólica). |
-| `PET_SUVmean`      | Valor médio de SUV em toda a região do tumor.                                  |
-
-### 2. Características Clínicas e Metadados
-Informações sobre o perfil do paciente e histórico de saúde.
-
-| Nome do Atributo            | Descrição                                                     |
-| :-------------------------- | :------------------------------------------------------------ |
-| `patient_age`               | Idade do paciente (intervalo de 30 a 90 anos).                |
-| `patient_gender`            | Género: Masculino (70%) / Feminino (30%).                     |
-| `smoking_history`           | Histórico tabágico: Nunca fumou, Ex-fumante ou Fumante atual. |
-| `family_history`            | Histórico familiar de câncer de pulmão (1 = Sim, 0 = Não).    |
-| `tumor_location`            | Localização: Pulmão Esquerdo (40%) ou Direito (60%).          |
-| `tumor_stage`               | Classificação do estágio do tumor (I a IV).                   |
-| `radiation_therapy`         | Se o paciente recebeu radioterapia (Binário).                 |
-| `chemotherapy_received`     | Se o paciente recebeu quimioterapia (Binário).                |
-| `immunotherapy_received`    | Se o paciente recebeu imunoterapia (Binário).                 |
-| `targeted_therapy_received` | Se o paciente recebeu terapia-alvo (Binário).                 |
-
-### 3. Características Genómicas e Biomarcadores
-Marcadores moleculares que indicam mutações específicas e instabilidade genómica.
-
-| Nome do Atributo          | Descrição                                                             |
-| :------------------------ | :-------------------------------------------------------------------- |
-| `EGFR_mutation_status`    | Detecção de mutação no gene EGFR (Binário).                           |
-| `KRAS_mutation_status`    | Detecção de mutação no gene KRAS (Binário).                           |
-| `ALK_fusion_status`       | Presença de fusão do gene ALK (Binário).                              |
-| `PD-L1_expression_level`  | Nível de expressão do biomarcador PD-L1 (0-100%).                     |
-| `tumor_mutational_burden` | Carga Mutacional do Tumor (TMB), indicador de instabilidade genómica. |
+O dataset **LungCanC2024** contém **289.010 registos**, permitindo pesquisas avançadas em medicina de precisão, diagnóstico assistido por computador e análise de sobrevivência.
 
 ---
 
-### Variáveis Alvo (Multi-Label)
+### Estrutura do Dataset
 
-O modelo é treinado para prever múltiplos outputs simultaneamente:
+Os dados estão organizados em quatro pilares fundamentais para garantir uma visão holística do paciente:
 
-* **`cancer_presence`**: Identificação binária (1 = Tumor Maligno, 0 = Sem Câncer).
-* **`cancer_subtype`**: Classificação do tipo (Adenocarcinoma, Carcinoma Escamoso, Células Pequenas, Outros).
-* **`cancer_stage`**: Estágio da progressão (Estágio I ao IV).
-* **`survival_time_months`**: Estimativa de tempo de sobrevivência em meses.
+#### 1. Características Radiómicas (Imagem)
+Métricas extraídas de Tomografias Computadorizadas (CT) e PET Scans.
+* `nodule_size_mm`: Diâmetro dos nódulos.
+* `HU_mean / HU_std`: Densidade tecidual em Unidades Hounsfield.
+* `GLCM_contrast / Correlation`: Textura e heterogeneidade do tumor.
+* `PET_SUVmax / SUVmean`: Atividade metabólica tumoral.
+
+#### 2. Metadados Clínicos
+* **Demografia**: Idade (30-90 anos) e Género.
+* **Histórico**: Tabagismo e histórico familiar.
+* **Tratamentos**: Registos de Radioterapia, Quimioterapia, Imunoterapia e Terapia Alvo.
+
+#### 3. Biomarcadores Genómicos
+* Status de mutação: **EGFR**, **KRAS** e fusão **ALK**.
+* Expressão de **PD-L1** e Carga Mutacional do Tumor (**TMB**).
+
+#### 4. Variáveis Alvo (Multi-Label)
+* `cancer_presence`: Diagnóstico binário (Maligno/Benigno).
+* `cancer_subtype`: Subtipagem histológica.
+* `cancer_stage`: Estadiamento clínico (I a IV).
+* `survival_time_months`: Predição de sobrevivência.
 
 ---
 
-### Tecnologias e Metodologia
+### Metodologia e Algoritmos
 
-Este projeto utiliza um pipeline de **Data Science** robusto:
-1.  **EDA (Exploratory Data Analysis)**: Visualização de separação de classes e detecção de outliers.
-2.  **Redução de Dimensionalidade**: Uso de **PCA** e **t-SNE** para entender a variância dos dados.
-3.  **Modelagem**: Rede Neural **MLP (Multi-Layer Perceptron)** construída em **PyTorch**.
-4.  **Interface**: Dashboard interativo desenvolvido com **Streamlit**.
+O pipeline de inteligência artificial foi estruturado em duas frentes principais:
+
+#### Aprendizado Supervisionado (Classificação)
+Implementação de uma **Rede Neuronal MLP (Multi-Layer Perceptron)** via PyTorch para predição multirrótulo, focada na alta acurácia diagnóstica.
+
+#### Aprendizado Não Supervisionado (Clustering)
+Uso do algoritmo **DBSCAN** (*Density-Based Spatial Clustering of Applications with Noise*) para:
+* **Deteção de Anomalias**: Identificação automática de outliers e perfis clínicos raros (ruído).
+* **Validação de Grupos**: Verificação de como as variáveis radiómicas e genómicas se agrupam naturalmente sem a influência dos rótulos pré-existentes.
+* **Análise de Densidade**: Diferenciação de subtipos tumorais baseada na densidade de suas características biológicas.
+
+---
+
+### Fluxo KDD (Processo de Descoberta)
+
+1.  **Seleção e Integração**: Consolidação da base LungCanC2024.
+2.  **Pré-processamento**: Tratamento de valores omissos e normalização robusta (**StandardScaler**).
+3.  **Transformação**: Redução de dimensionalidade via **PCA** (Principal Component Analysis) para otimizar o desempenho do DBSCAN e da MLP.
+4.  **Mineração de Dados**: Execução do treino da Rede Neuronal e do agrupamento espacial.
+5.  **Interpretação/Avaliação**: Dashboard interativo para análise de loadings, densidades de separação e métricas de performance (Acurácia, F1-Score e Coeficiente de Silhueta).
+
+---
+
+### Tecnologias Utilizadas
+
+* **Python 3.10+**
+* **Streamlit**: Interface do Dashboard.
+* **PyTorch**: Framework de Deep Learning.
+* **Scikit-Learn**: Algoritmos de ML e Pré-processamento.
+* **Plotly**: Visualização avançada de dados.
 
 ---
 
