@@ -68,9 +68,20 @@ Uso do algoritmo **DBSCAN** (*Density-Based Spatial Clustering of Applications w
 2.  **Pré-processamento**: Tratamento de valores omissos e normalização robusta (**StandardScaler**).
 3.  **Transformação**: Redução de dimensionalidade via **PCA** (Principal Component Analysis) para otimizar o desempenho do DBSCAN e da MLP.
 4.  **Mineração de Dados**: Execução do treino da Rede Neural e do agrupamento espacial.
-5.  **Interpretação/Avaliação**: Dashboard interativo para análise de loadings, densidades de separação e métricas de performance (Acurácia, F1-Score e Coeficiente de Silhueta).
+5.  **Interpretação/Avaliação dos Resultados**: Dashboard interativo para análise de loadings, densidades de separação e métricas de performance do modelo (Acurácia, Precisão, F1-Score, Recall e Coeficiente de Silhueta).
 
 ---
+
+### EDA - Análise Exploratória dos Dados
+
+A análise exploratória dos dados deverá responder perguntas que ajudem a compreender:
+
+1. Perfil dos pacientes;
+2. Distribuição da doença;
+3. Fatores associados ao câncer;
+4. Comportamento dos atributos clínicos;
+5. Qualidade dos dados;
+6. Hipóteses para a etapa de mineração.
 
 ### Tecnologias Utilizadas
 
