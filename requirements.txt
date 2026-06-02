@@ -3,3 +3,6 @@ pandas
 numpy
 plotly
 torch
+pydicom
+matplotlib
+scikit-learn

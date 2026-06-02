@@ -49,7 +49,7 @@ Métricas extraídas de Tomografias Computadorizadas (CT) e PET Scans.
 
 ### Metodologia e Algoritmos
 
-A pipeline de inteligência artificial foi estruturada em duas frentes principais:
+O pipeline de inteligência artificial foi estruturado em duas frentes principais:
 
 #### Aprendizado Supervisionado (Classificação)
 Implementação de uma **Rede Neuronal MLP (Multi-Layer Perceptron)** via PyTorch para predição multirrótulo, focada na alta acurácia diagnóstica.
@@ -67,7 +67,7 @@ Uso do algoritmo **DBSCAN** (*Density-Based Spatial Clustering of Applications w
 1.  **Seleção e Integração**: Consolidação da base LungCanC2024.
 2.  **Pré-processamento**: Tratamento de valores omissos e normalização robusta (**StandardScaler**).
 3.  **Transformação**: Redução de dimensionalidade via **PCA** (Principal Component Analysis) para otimizar o desempenho do DBSCAN e da MLP.
-4.  **Mineração de Dados**: Execução do treino da Rede Neuronal e do agrupamento espacial.
+4.  **Mineração de Dados**: Execução do treino da Rede Neural e do agrupamento espacial.
 5.  **Interpretação/Avaliação**: Dashboard interativo para análise de loadings, densidades de separação e métricas de performance (Acurácia, F1-Score e Coeficiente de Silhueta).
 
 ---
