@@ -2,6 +2,7 @@ import pandas as pd
 import streamlit as st
 import plotly.express as px
 import plotly.graph_objects as go
+import plotly.figure_factory as ff
 
 def graficos_cancer_por_genero(df):
     st.subheader("Como está distribuído o diagnóstico por gênero?")
@@ -102,9 +103,19 @@ def graficos_cancer_por_genero(df):
     ) 
     
 def graficos_cancer_por_idade(df):
+    graficos_dist_frequencia(df)
+    resumo_idade_por_diagnostico(df)
+    faixa_etaria_diagnostico(df)
+
+def graficos_dist_frequencia(df):
     st.subheader("Como a idade está distribuída entre pacientes com e sem câncer?")
+    grafico_distribuicao_idade(df)
+    boxplot_idade_por_diagnostico(df)
+    distribuicao_frequencia_por_idade(df)
+
+def distribuicao_frequencia_por_idade(df):
+    st.write("Histograma por diagnóstico por idade")
     
-    st.write("Histograma - Distribuição da Idade por Diagnóstico")
     df_plot = df.copy()
     df_plot['diagnostico'] = df_plot['cancer_presence'].map({ 0: 'Câncer Não Detectado', 1: 'Câncer Detectado'})
     cores = {
@@ -127,10 +138,6 @@ def graficos_cancer_por_idade(df):
         legend_title='Diagnóstico'
     )
     st.plotly_chart(fig, use_container_width=True)
-    
-    boxplot_idade_por_diagnostico(df)
-    resumo_idade_por_diagnostico(df)
-    faixa_etaria_diagnostico(df)
 
 def boxplot_idade_por_diagnostico(df):
     st.write("BoxPlot - Distribuição da Idade por Diagnóstico")
@@ -154,6 +161,26 @@ def boxplot_idade_por_diagnostico(df):
         yaxis_title='Idade',
         legend_title='Diagnóstico'
     )
+    st.plotly_chart(fig, use_container_width=True)
+
+def grafico_distribuicao_idade(df):
+    st.write("Distribuição com Curvas de densidade separadas")
+
+    idade_sem = df[df['cancer_presence'] == 0]['patient_age']
+    idade_com = df[df['cancer_presence'] == 1]['patient_age']
+
+    fig = ff.create_distplot(
+        [idade_sem, idade_com],
+        ['Não Detectado', 'Detectado'],
+        show_hist=False,
+        show_rug=False
+    )
+
+    fig.update_layout(
+        xaxis_title='Idade',
+        yaxis_title='Densidade'
+    )
+
     st.plotly_chart(fig, use_container_width=True)
 
 def resumo_idade_por_diagnostico(df):

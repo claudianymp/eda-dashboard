@@ -8,6 +8,7 @@ from src.kdd.dashboard_avaliacao import dashboard_avaliacao_modelo
 from src.eda.visao_geral import montar_visao_geral, plot_distribuicao_geral_diagnostico
 from src.eda.analise_perfil_pacientes import graficos_cancer_por_genero, graficos_cancer_por_idade, graficos_cancer_por_estagio
 from src.eda.analise_fatores_risco import analisar_fator_risco, heatmap_fatores_risco
+from src.eda.analise_caracteristicas_clinicas import distribuicao_geral_casos, distribuicao_estagios, distribuicao_subtipos, progressao_estagios, heatmap_estagio_subtipo
 
 st.set_page_config(
     page_title='EDA - Dashboard',
@@ -75,7 +76,15 @@ with tab_eda:
         heatmap_fatores_risco(st.session_state.df_train,)
        
     with tab_caract_clinicas:
-        st.write("lalal")
+        distribuicao_geral_casos(st.session_state.df_train)
+
+        distribuicao_estagios(st.session_state.df_train)
+
+        distribuicao_subtipos(st.session_state.df_train)
+
+        progressao_estagios(st.session_state.df_train)
+
+        heatmap_estagio_subtipo(st.session_state.df_train)
     
     with tab_dist_estatistica:
         st.write("lalal")
