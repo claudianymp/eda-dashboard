@@ -31,19 +31,18 @@ st.session_state.X_train_scaled = None
 st.session_state.X_test_scaled = None
 st.session_state.df_train_pca = None 
 st.session_state.df_test_pca = None 
-st.session_state.pipe_pca = None
+st.session_state.pipe_pca = None 
 
 with tab_eda:
     st.subheader('Análise de Dataset Tabular')
     
-    tab_visao_geral, tab_perfil_pacientes, tab_fatores_risco, tab_caract_clinicas, tab_dist_estatistica, tab_qual_dados, tab_prep_mineracao  = st.tabs([
+    tab_visao_geral, tab_perfil_pacientes, tab_fatores_risco, tab_caract_clinicas, tab_dist_estatistica, tab_qual_dados  = st.tabs([
         "Visão Geral do Dataset",
         "1. Perfil Epidemiológico dos Pacientes",
         "2. Fatores de Risco",
         "3. Características Clínicas",
         "4. Distribuições Estatísticas",
         "5. Qualidade dos Dados",
-        "6. Preparação para Mineração",
     ])
     
     df_test = load_csv_to_dataframe('./data/test.csv')
@@ -137,15 +136,15 @@ with tab_eda:
     with tab_qual_dados:
        visao_dados_qualidade_dados(st.session_state.df_train)
         
-    with tab_prep_mineracao:
-       exibir_preparacao_mineracao(
-        df_original=st.session_state.df,
-        df_train=st.session_state.df_train,
-        df_test=st.session_state.df_test,
-        df_train_pca=st.session_state.df_train_pca,
-        df_test_pca=st.session_state.df_test_pca,
-        pipe_pca=st.session_state.pipe_pca
-    )
+    # with tab_prep_mineracao:
+    #    exibir_preparacao_mineracao(
+    #     df_original=st.session_state.df,
+    #     df_train=st.session_state.df_train,
+    #     df_test=st.session_state.df_test,
+    #     df_train_pca=st.session_state.df_train_pca,
+    #     df_test_pca=st.session_state.df_test_pca,
+    #     pipe_pca=st.session_state.pipe_pca
+    # )
 
 with tab_kdd:
     tab_selecao, tab_pre_processamento, tab_transformacao, tab_mineracao, tab_resultado  = st.tabs([

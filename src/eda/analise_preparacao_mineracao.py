@@ -11,6 +11,12 @@ def exibir_preparacao_mineracao(
     pipe_pca
 ):
     st.header("Preparação para Mineração")
+    
+    if pipe_pca is None:
+        st.error("O pipeline PCA não foi encontrado. Execute a etapa de PCA antes da preparação para mineração.")
+        return
+
+    pca = pipe_pca.named_steps['pca']
 
     with st.expander(
         "Seleção de Atributos",
@@ -138,9 +144,7 @@ def exibir_preparacao_mineracao(
             use_container_width=True
         )
         
-    with st.expander(
-        "Dataset Preparado para Mineração"
-    ):
+    with st.expander("Dataset Preparado para Mineração"):
         st.write(
             f"Shape Treino PCA: {df_train_pca.shape}"
         )
@@ -153,7 +157,7 @@ def exibir_preparacao_mineracao(
         )
 
     with st.expander(
-        "7️Resumo da Preparação",
+        "Resumo da Preparação",
         expanded=True
     ):
         col1, col2, col3, col4 = st.columns(4)
