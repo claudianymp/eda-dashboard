@@ -7,6 +7,8 @@ from src.kdd.mineracao import mineracao_dbscan, mineracao_rede_neural
 from src.kdd.dashboard_avaliacao import dashboard_avaliacao_modelo
 from src.eda.visao_geral import montar_visao_geral, plot_distribuicao_geral_diagnostico
 from src.eda.analise_perfil_pacientes import graficos_cancer_por_genero, graficos_cancer_por_idade, graficos_cancer_por_estagio
+from src.eda.analise_fatores_risco import analisar_fator_risco, heatmap_fatores_risco
+
 st.set_page_config(
     page_title='EDA - Dashboard',
     page_icon=':bar_chart:',
@@ -24,13 +26,14 @@ st.session_state.df_train = None
 with tab_eda:
     st.subheader('Análise de Dataset Tabular')
     
-    tab_visao_geral, tab_perfil_pacientes, tab_caract_clinicas, tab_dist_estatistica, tab_qual_dados, tab_prep_mineracao  = st.tabs([
+    tab_visao_geral, tab_perfil_pacientes, tab_fatores_risco, tab_caract_clinicas, tab_dist_estatistica, tab_qual_dados, tab_prep_mineracao  = st.tabs([
         "Visão Geral do Dataset",
         "1. Perfil Epidemiológico dos Pacientes",
-        "2. Características Clínicas",
-        "3. Distribuições Estatísticas",
-        "4. Qualidade dos Dados",
-        "5. Preparação para Mineração",
+        "2. Fatores de Risco",
+        "3. Características Clínicas",
+        "4. Distribuições Estatísticas",
+        "5. Qualidade dos Dados",
+        "6. Preparação para Mineração",
     ])
     
     df_test = load_csv_to_dataframe('./data/test.csv')
@@ -56,6 +59,21 @@ with tab_eda:
         with st.expander("Diagnóstico por Estágio"):
             graficos_cancer_por_estagio(st.session_state.df_train)
     
+    with tab_fatores_risco:
+        analisar_fator_risco(
+            st.session_state.df_train,
+            'smoking_history',
+            'Tabagismo',
+            'Pacientes fumantes apresentam maior incidência de câncer?'
+        )
+        analisar_fator_risco(
+            st.session_state.df_train,
+            'family_history',
+            'Histórico Familiar',
+            'Ter histórico familiar aumenta a frequência de diagnóstico?'
+        )
+        heatmap_fatores_risco(st.session_state.df_train,)
+       
     with tab_caract_clinicas:
         st.write("lalal")
     
