@@ -19,9 +19,7 @@ def iniciar_etapa_selecao_integracao(df):
     target = ['cancer_presence', 'cancer_subtype']
     
     df_selecionado = df[features_radiomicas + features_clinicas + target]
-    
-    st.success(f"Seleção concluída - dataset {df.attrs['dataset_name']} : {df_selecionado.shape[1]} colunas mantidas.")
-    
+        
     return df_selecionado
 
 

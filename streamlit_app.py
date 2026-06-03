@@ -5,7 +5,8 @@ from src.kdd.pre_processamento import iniciar_etapa_pre_processamento
 from src.kdd.transformacacao import iniciar_etapa_transformacao_pca, visualizar_pca_3d
 from src.kdd.mineracao import mineracao_dbscan, mineracao_rede_neural
 from src.kdd.dashboard_avaliacao import dashboard_avaliacao_modelo
-
+from src.eda.visao_geral import montar_visao_geral, plot_distribuicao_geral_diagnostico
+from src.eda.analise_perfil_pacientes import graficos_cancer_por_genero, graficos_cancer_por_idade, graficos_cancer_por_estagio
 st.set_page_config(
     page_title='EDA - Dashboard',
     page_icon=':bar_chart:',
@@ -15,7 +16,57 @@ st.set_page_config(
 st.title("Dashboard - Análise Exploratória de Dados (EDA)")
 st.markdown("---")
 
-tab_kdd, tab_eda = st.tabs(["Fluxo KDD", "EDA - Análise Exploratória de Dados"])
+tab_eda, tab_kdd = st.tabs(["EDA - Análise Exploratória de Dados", "Fluxo KDD"])
+
+st.session_state.df_test = None
+st.session_state.df_train = None
+
+with tab_eda:
+    st.subheader('Análise de Dataset Tabular')
+    
+    tab_visao_geral, tab_perfil_pacientes, tab_caract_clinicas, tab_dist_estatistica, tab_qual_dados, tab_prep_mineracao  = st.tabs([
+        "Visão Geral do Dataset",
+        "1. Perfil Epidemiológico dos Pacientes",
+        "2. Características Clínicas",
+        "3. Distribuições Estatísticas",
+        "4. Qualidade dos Dados",
+        "5. Preparação para Mineração",
+    ])
+    
+    df_test = load_csv_to_dataframe('./data/test.csv')
+    df_train = load_csv_to_dataframe('./data/train.csv')
+
+    if(df_test is not None):
+        st.session_state.df_test = iniciar_etapa_selecao_integracao(df_test)
+
+    if(df_train is not None):
+        st.session_state.df_train = iniciar_etapa_selecao_integracao(df_train)
+    
+    with tab_visao_geral:
+        montar_visao_geral(st.session_state.df_train)
+        plot_distribuicao_geral_diagnostico(st.session_state.df_train)
+        
+    with tab_perfil_pacientes:
+        with st.expander("Diagnóstico por Gênero"):
+            graficos_cancer_por_genero(st.session_state.df_train)
+        
+        with st.expander("Diagnóstico por Idade"):
+            graficos_cancer_por_idade(st.session_state.df_train)
+            
+        with st.expander("Diagnóstico por Estágio"):
+            graficos_cancer_por_estagio(st.session_state.df_train)
+    
+    with tab_caract_clinicas:
+        st.write("lalal")
+    
+    with tab_dist_estatistica:
+        st.write("lalal")
+        
+    with tab_qual_dados:
+        st.write("lalal")
+        
+    with tab_prep_mineracao:
+        st.write("lalal")
 
 with tab_kdd:
     tab_selecao, tab_pre_processamento, tab_transformacao, tab_mineracao, tab_resultado  = st.tabs([
@@ -26,8 +77,6 @@ with tab_kdd:
         "5. Avaliação e Interpretação",
     ])
 
-    st.session_state.df_test = None
-    st.session_state.df_train = None
     st.session_state.X_train_scaled = None
     st.session_state.X_test_scaled = None
     st.session_state.df_train_pca = None 
@@ -35,15 +84,9 @@ with tab_kdd:
     st.session_state.pipe = None
 
     with tab_selecao:
-        df_test = load_csv_to_dataframe('./data/test.csv')
-        df_train = load_csv_to_dataframe('./data/train.csv')
-        
-        if(df_test is not None):
-            st.session_state.df_test = iniciar_etapa_selecao_integracao(df_test)
-        
-        if(df_train is not None):
-            st.session_state.df_train = iniciar_etapa_selecao_integracao(df_train)
-            
+        st.success(f"Seleção concluída - dataset {st.session_state.df_train.attrs['dataset_name']} : {st.session_state.df_train.shape[1]} colunas mantidas.")
+        st.success(f"Seleção concluída - dataset {st.session_state.df_test.attrs['dataset_name']} : {st.session_state.df_test.shape[1]} colunas mantidas.")
+
         with st.expander("Visualização do dataset selecionado: Colunas mantidas"):
             mostrar_estrutura_dataset(st.session_state.df_train, 10)
         
@@ -117,7 +160,6 @@ with tab_kdd:
             dbscan_labels=st.session_state.get('dbscan_labels',None)
         )
                          
-with tab_eda:
-    st.subheader('Análise de Dataset Tabular')
+   
     
 
