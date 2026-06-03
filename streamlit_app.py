@@ -9,6 +9,9 @@ from src.eda.visao_geral import montar_visao_geral, plot_distribuicao_geral_diag
 from src.eda.analise_perfil_pacientes import graficos_cancer_por_genero, graficos_cancer_por_idade, graficos_cancer_por_estagio
 from src.eda.analise_fatores_risco import analisar_fator_risco, heatmap_fatores_risco
 from src.eda.analise_caracteristicas_clinicas import distribuicao_geral_casos, distribuicao_estagios, distribuicao_subtipos, progressao_estagios, heatmap_estagio_subtipo
+from src.eda.analise_distribuicao_estatistica import distribuicao_variavel, boxplot_diagnostico, correlacao_variaveis_numericas, resumo_estatistico
+from src.eda.analise_qualidade_dados import visao_dados_qualidade_dados
+from src.eda.analise_preparacao_mineracao import exibir_preparacao_mineracao
 
 st.set_page_config(
     page_title='EDA - Dashboard',
@@ -21,8 +24,14 @@ st.markdown("---")
 
 tab_eda, tab_kdd = st.tabs(["EDA - Análise Exploratória de Dados", "Fluxo KDD"])
 
+st.session_state.df = None
 st.session_state.df_test = None
 st.session_state.df_train = None
+st.session_state.X_train_scaled = None
+st.session_state.X_test_scaled = None
+st.session_state.df_train_pca = None 
+st.session_state.df_test_pca = None 
+st.session_state.pipe_pca = None
 
 with tab_eda:
     st.subheader('Análise de Dataset Tabular')
@@ -44,6 +53,7 @@ with tab_eda:
         st.session_state.df_test = iniciar_etapa_selecao_integracao(df_test)
 
     if(df_train is not None):
+        st.session_state.df = df_train
         st.session_state.df_train = iniciar_etapa_selecao_integracao(df_train)
     
     with tab_visao_geral:
@@ -87,13 +97,55 @@ with tab_eda:
         heatmap_estagio_subtipo(st.session_state.df_train)
     
     with tab_dist_estatistica:
-        st.write("lalal")
+        distribuicao_variavel(
+            st.session_state.df_train,
+            "patient_age",
+            "Como as variáveis numéricas estão distribuídas e existem diferenças entre pacientes com e sem câncer?"
+        )
+        distribuicao_variavel(
+            st.session_state.df_train,
+            "nodule_size_mm",
+            "Tumores maiores aparecem mais em diagnósticos positivos?"
+        )
+        distribuicao_variavel(
+            st.session_state.df_train,
+            "PET_SUVmax",
+            "Lesões malignas possuem SUVmax mais elevado?"
+        )
+        distribuicao_variavel(
+            st.session_state.df_train,
+            "HU_mean",
+            "Distribuição do HU Mean"
+        )
+        distribuicao_variavel(
+            st.session_state.df_train,
+            "HU_std",
+            "Distribuição do HU Std"
+        )
+        boxplot_diagnostico(
+            st.session_state.df_train,
+            "PET_SUVmax",
+        )
+        boxplot_diagnostico(
+            st.session_state.df_train,
+            "nodule_size_mm",
+        ) 
+        
+        resumo_estatistico(st.session_state.df_train,)
+        correlacao_variaveis_numericas(st.session_state.df_train,) 
         
     with tab_qual_dados:
-        st.write("lalal")
+       visao_dados_qualidade_dados(st.session_state.df_train)
         
     with tab_prep_mineracao:
-        st.write("lalal")
+       exibir_preparacao_mineracao(
+        df_original=st.session_state.df,
+        df_train=st.session_state.df_train,
+        df_test=st.session_state.df_test,
+        df_train_pca=st.session_state.df_train_pca,
+        df_test_pca=st.session_state.df_test_pca,
+        pipe_pca=st.session_state.pipe_pca
+    )
 
 with tab_kdd:
     tab_selecao, tab_pre_processamento, tab_transformacao, tab_mineracao, tab_resultado  = st.tabs([
@@ -103,12 +155,6 @@ with tab_kdd:
         "4. Mineração",
         "5. Avaliação e Interpretação",
     ])
-
-    st.session_state.X_train_scaled = None
-    st.session_state.X_test_scaled = None
-    st.session_state.df_train_pca = None 
-    st.session_state.df_test_pca = None 
-    st.session_state.pipe = None
 
     with tab_selecao:
         st.success(f"Seleção concluída - dataset {st.session_state.df_train.attrs['dataset_name']} : {st.session_state.df_train.shape[1]} colunas mantidas.")
